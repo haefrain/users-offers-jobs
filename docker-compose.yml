@@ -1,0 +1,45 @@
+version: '3.7'
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    ports:
+      - 8888:80
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - backend
+    restart: always
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: job_bank
+      MYSQL_USER: haefrain
+      MYSQL_PASSWORD: 14220309
+      MYSQL_ROOT_PASSWORD: admin_admin
+    ports:
+      - 33069:3306
+    volumes:
+      - ./mysql:/var/lib/mysql
+    networks:
+      - backend
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - 9001:80
+    networks:
+      - backend
+
+networks:
+  backend:
